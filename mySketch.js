@@ -25,7 +25,7 @@ const questions = [
 
 function preload() {
   // 測驗背景圖 - 請確保這些網址在 GitHub Pages 環境下可存取
-  quizImages[0] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406732_0.jpg');
+  quizImages[0] = loadImage('asset/S__5406732_0.jpg');
   quizImages[1] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406729_0.jpg');
   quizImages[2] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406727_0.jpg');
   quizImages[3] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406728_0.jpg');

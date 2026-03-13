@@ -1,14 +1,14 @@
 let currentScene = 'START'; 
 let currentQuestion = 0;
 let scores = { A: 0, B: 0, C: 0, D: 0 };
-let finalResultKey = ""; // 紀錄最終結果類別
+let finalResultKey = ""; 
 
 let chains = [];
 const cols = 32; 
 const beadsPerChain = 60; 
 let spacingX, spacingY;
 let quizImages = []; 
-let resultImages = {}; // 儲存結果背景圖
+let resultImages = {}; 
 let randomizedOptions = []; 
 
 const gravity = 0.3;   
@@ -24,7 +24,7 @@ const questions = [
 ];
 
 function preload() {
-  // 測驗背景圖
+  // 測驗背景圖 - 請確保這些網址在 GitHub Pages 環境下可存取
   quizImages[0] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406732_0.jpg');
   quizImages[1] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406729_0.jpg');
   quizImages[2] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406727_0.jpg');
@@ -111,7 +111,6 @@ function drawExhibitionText() {
   textSize(width * 0.05);
   textAlign(CENTER, TOP);
 
-  // 左上方
   let leftTxt = "師大附中一六〇九畢業展";
   let lx = width * 0.1;
   let ly = height * 0.1;
@@ -119,7 +118,6 @@ function drawExhibitionText() {
     text(leftTxt[i], lx, ly + i * (width * 0.06));
   }
 
-  // 右下方
   let rightTxt = "三/二三-四/七";
   let rx = width * 0.9;
   let ry = height * 0.65;
@@ -136,7 +134,7 @@ function drawCurtain() {
       let vel = p5.Vector.sub(n.pos, n.prev).mult(damping);
       n.prev = n.pos.copy(); n.pos.add(vel); n.pos.y += gravity;
       let d = dist(mouseX, mouseY, n.pos.x, n.pos.y);
-      if (d < 85 && (mouseIsPressed || touches.length > 0)) {
+      if (d < 85 && (mouseIsPressed || (touches.length > 0))) {
         n.pos.add(p5.Vector.sub(n.pos, createVector(mouseX, mouseY)).normalize().mult(12)); 
       }
     }
@@ -188,21 +186,19 @@ function drawQuiz() {
 }
 
 function drawResult() {
-  // 顯示結果背景圖
   if (resultImages[finalResultKey]) {
     image(resultImages[finalResultKey], 0, 0, width, height);
   } else {
     background(0);
   }
   
-  // 底部提示（稍微增加透明底色確保可見）
   fill(0, 100); noStroke();
   rect(width/2, height * 0.82, width * 0.5, height * 0.05, 10);
   fill(255, 220); textSize(width * 0.04);
   text("點擊畫面 重新開始", width/2, height * 0.82);
 }
 
-function mousePressed() {
+function handleInteraction() {
   if (currentScene === 'START') {
     if (mouseY > height * 0.7) {
       currentScene = 'QUIZ';
@@ -222,17 +218,35 @@ function mousePressed() {
         break;
       }
     }
-  } else if (currentScene === 'RESULT') resetAll();
+  } else if (currentScene === 'RESULT') {
+    resetAll();
+  }
+}
+
+function mousePressed() {
+  handleInteraction();
+}
+
+function touchStarted() {
+  handleInteraction();
+  return false; // 防止捲動行為
 }
 
 function calculateResult() {
-  let maxK = 'A'; let maxV = scores.A;
-  for (let k in scores) { if (scores[k] > maxV) { maxV = scores[k]; maxK = k; } }
+  let maxK = 'A'; 
+  let maxV = scores.A;
+  for (let k in scores) { 
+    if (scores[k] > maxV) { 
+      maxV = scores[k]; 
+      maxK = k; 
+    } 
+  }
   
   if (maxV >= 5) {
     finalResultKey = "天選之人";
   } else {
-    finalResultKey = { 'A': '大吉', 'B': '吉', 'C': '中吉', 'D': '末吉' }[maxK];
+    const mapping = { 'A': '大吉', 'B': '吉', 'C': '中吉', 'D': '末吉' };
+    finalResultKey = mapping[maxK];
   }
 }
 
@@ -241,4 +255,7 @@ function resetAll() {
   initCurtain(); shuffleCurrentOptions();
 }
 
-function windowResized() { resizeCanvas(windowWidth, windowHeight); initCurtain(); }
+function windowResized() { 
+  resizeCanvas(windowWidth, windowHeight); 
+  initCurtain(); 
+}

@@ -24,20 +24,20 @@ const questions = [
 ];
 
 function preload() {
-  // 測驗背景圖 - 請確保這些網址在 GitHub Pages 環境下可存取
-  quizImages[0] = loadImage('asset/S__5406732_0.jpg');
-  quizImages[1] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406729_0.jpg');
-  quizImages[2] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406727_0.jpg');
-  quizImages[3] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406728_0.jpg');
-  quizImages[4] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406731_0.jpg');
-  quizImages[5] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406730_0.jpg');
+  // --- 測驗背景圖（請確保圖片副檔名是 .jpg 且都在 assets 資料夾內） ---
+  quizImages[0] = loadImage('assets/S__5406732_0.jpg');
+  quizImages[1] = loadImage('assets/S__5406729_0.jpg');
+  quizImages[2] = loadImage('assets/S__5406727_0.jpg');
+  quizImages[3] = loadImage('assets/S__5406728_0.jpg');
+  quizImages[4] = loadImage('assets/S__5406731_0.jpg');
+  quizImages[5] = loadImage('assets/S__5406730_0.jpg');
 
-  // 結果背景圖
-  resultImages['大吉'] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406735_0.jpg');
-  resultImages['吉'] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406734_0.jpg');
-  resultImages['中吉'] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406737_0.jpg');
-  resultImages['末吉'] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406744.jpg');
-  resultImages['天選之人'] = loadImage('https://deckard.openprocessing.org/user534261/visual2888001/h00f28158394c851c39e97e9830d85ada/S__5406741.jpg');
+  // --- 結果背景圖 ---
+  resultImages['大吉'] = loadImage('assets/S__5406735_0.jpg');
+  resultImages['吉'] = loadImage('assets/S__5406734_0.jpg');
+  resultImages['中吉'] = loadImage('assets/S__5406737_0.jpg');
+  resultImages['末吉'] = loadImage('assets/S__5406744.jpg');
+  resultImages['天選之人'] = loadImage('assets/S__5406741.jpg');
 }
 
 function setup() {
@@ -229,7 +229,7 @@ function mousePressed() {
 
 function touchStarted() {
   handleInteraction();
-  return false; // 防止捲動行為
+  return false; // 防止手機畫面滑動
 }
 
 function calculateResult() {
@@ -241,7 +241,6 @@ function calculateResult() {
       maxK = k; 
     } 
   }
-  
   if (maxV >= 5) {
     finalResultKey = "天選之人";
   } else {

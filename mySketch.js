@@ -96,10 +96,12 @@ function draw() {
 }
 
 function drawGradientBackground() {
-  let c1 = color(150, 20, 30); let c2 = color(255, 182, 193); 
+  let c1 = color(150, 20, 30); 
+  let c2 = color(255, 182, 193); 
   for (let y = 0; y < height; y++) {
     let inter = map(y, 0, height, 0, 1);
-    stroke(lerpColor(c1, c2, inter)); line(0, y, width, y);
+    stroke(lerpColor(c1, c2, inter)); 
+    line(0, y, width, y);
   }
 }
 
@@ -127,20 +129,27 @@ function drawExhibitionText() {
   pop();
 }
 
+// === 優化後的 drawCurtain() 函數 ===
 function drawCurtain() {
   for (let nodes of chains) {
+    // 物理模擬部分 (維持不變)
     for (let j = 1; j < nodes.length; j++) {
       let n = nodes[j];
       let vel = p5.Vector.sub(n.pos, n.prev).mult(damping);
-      n.prev = n.pos.copy(); n.pos.add(vel); n.pos.y += gravity;
+      n.prev = n.pos.copy();
+      n.pos.add(vel);
+      n.pos.y += gravity;
+
+      // 觸控點影響力 (維持不變)
       let d = dist(mouseX, mouseY, n.pos.x, n.pos.y);
       if (d < 85 && (mouseIsPressed || (touches.length > 0))) {
-        n.pos.add(p5.Vector.sub(n.pos, createVector(mouseX, mouseY)).normalize().mult(12)); 
+        n.pos.add(p5.Vector.sub(n.pos, createVector(mouseX, mouseY)).normalize().mult(12));
       }
     }
-    for (let step = 0; step < 2; step++) {
+    for (let step = 0; step < 2; step++) { // 約束調整 (維持不變)
       for (let j = 1; j < nodes.length; j++) {
-        let n1 = nodes[j-1]; let n2 = nodes[j];
+        let n1 = nodes[j - 1];
+        let n2 = nodes[j];
         let d = p5.Vector.dist(n1.pos, n2.pos);
         let err = (spacingY - d) * 0.5;
         let dir = p5.Vector.sub(n2.pos, n1.pos).normalize().mult(err);
@@ -148,20 +157,49 @@ function drawCurtain() {
         n2.pos.add(dir);
       }
     }
-    stroke(255, 15); noFill(); beginShape();
-    for(let n of nodes) vertex(n.pos.x, n.pos.y);
+    // 物理模擬部分結束
+
+    // 渲染優化部分：批次繪製珠子和鏈條
+
+    // 1. 繪製鏈條 (維持不變，這部分本身就是一個 beginShape/endShape)
+    stroke(255, 15);
+    noFill();
+    beginShape();
+    for (let n of nodes) vertex(n.pos.x, n.pos.y);
     endShape();
+
+    // 2. 批次繪製非文字珠子 (黑色半透明)
+    fill(0, 0, 0, 45); // 設定一次顏色
+    noStroke();
     for (let n of nodes) {
-      if (n.isText) {
-        push(); drawingContext.shadowBlur = 18; drawingContext.shadowColor = color(255);
-        fill(255); noStroke(); ellipse(n.pos.x, n.pos.y, 10, 10); pop();
-      } else {
-        fill(0, 0, 0, 45); noStroke(); ellipse(n.pos.x, n.pos.y, 10, 10);
+      if (!n.isText) {
+        ellipse(n.pos.x, n.pos.y, 10, 10);
       }
     }
+
+    // 3. 批次繪製文字珠子 (白色，帶陰影)
+    // 陰影渲染相對昂貴，這裡使用 push/pop 確保只對這組珠子生效
+    push();
+    drawingContext.shadowBlur = 18;
+    drawingContext.shadowColor = color(255);
+    fill(255); // 設定一次顏色
+    noStroke();
+    for (let n of nodes) {
+      if (n.isText) {
+        ellipse(n.pos.x, n.pos.y, 10, 10);
+      }
+    }
+    pop(); // 恢復之前的繪圖狀態，關閉陰影
   }
-  fill(255); noStroke(); textSize(width * 0.045); text("撥開珠簾 點擊開始", width/2, height * 0.92);
+
+  // 底部文字 (維持不變)
+  fill(255);
+  noStroke();
+  textSize(width * 0.045);
+  text("撥開珠簾 點擊開始", width / 2, height * 0.92);
 }
+// === 優化後的 drawCurtain() 函數結束 ===
+
 
 function drawQuiz() {
   if (quizImages[currentQuestion]) image(quizImages[currentQuestion], 0, 0, width, height);
@@ -200,7 +238,8 @@ function drawResult() {
 
 function handleInteraction() {
   if (currentScene === 'START') {
-    if (mouseY > height * 0.7) {
+    // 這是原本的觸發開始測驗的邏輯
+    if (mouseY > height * 0.7) { 
       currentScene = 'QUIZ';
       shuffleCurrentOptions();
     }
@@ -208,6 +247,7 @@ function handleInteraction() {
     let btnH = height * 0.06;
     for (let i = 0; i < randomizedOptions.length; i++) {
       let py = height * 0.62 + i * height * 0.08;
+      // 這裡檢查點擊範圍
       if (mouseY > py - btnH/2 && mouseY < py + btnH/2) {
         scores[randomizedOptions[i].k]++;
         if (currentQuestion < questions.length - 1) {
